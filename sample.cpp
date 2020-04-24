@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <sstream>
+#include <getopt.h>
 #include "maxent.h"
 
 using namespace std;
@@ -73,7 +74,7 @@ int main(int argc, char* argv[])
         cerr << "Extracting events.";
     }
 
-	string extractionCommand = 
+	string extractionCommand =
     	rubyCommand + " EventExtracter.rb " + inFile + " " + eventFile;
     system(extractionCommand.c_str());
 
@@ -120,4 +121,3 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
-
