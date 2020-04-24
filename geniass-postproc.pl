@@ -45,7 +45,17 @@ while ($s =~ s/\(((?:[^\(\)]|\([^\(\)]*\)){0,250})\n((?:[^\(\)]|\([^\(\)]*\)){0,
 # no break after periods followed by a non-uppercase "normal word"
 # (i.e. token with only lowercase alpha and dashes, with a minimum
 # length of initial lowercase alpha).
-$s =~ s/\.\n([a-z]{3}[a-z-]{0,}[ \.\:\,])/. $1/g;
+$s =~ s/\.\n([a-z]{3}[a-z-]{0,}[ \.\:\,\;])/. $1/g;
+
+# no break in likely species names with abbreviated genus (e.g.
+# "S. cerevisiae"). Differs from above in being more liberal about
+# separation from following text.
+$s =~ s/\b([A-Z]\.)\n([a-z]{3,})\b/$1 $2/g;
+
+# no break in likely person names with abbreviated middle name
+# (e.g. "Anton P. Chekhov", "A. P. Chekhov"). Note: Won't do
+# "A. Chekhov" as it yields too many false positives.
+$s =~ s/\b((?:[A-Z]\.|[A-Z][a-z]{3,}) [A-Z]\.)\n([A-Z][a-z]{3,})\b/$1 $2/g;
 
 
 # no break before CC ...
@@ -94,6 +104,13 @@ $s =~ s/(\bDr\.)\n/$1 /g;
 $s =~ s/(\bMr\.)\n/$1 /g;
 $s =~ s/(\bMs\.)\n/$1 /g;
 $s =~ s/(\bMrs\.)\n/$1 /g;
+
+
+# or others taking a number after the abbrev
+$s =~ s/\b([Aa]pprox\.|[Nn]o\.|[Ff]igs?\.)\n(\d+)/$1 $2/g;
+
+# no break before comma (e.g. Smith, A., Black, B., ...)
+$s =~ s/(\.\s*)\n(\s*,)/$1 $2/g;
 
 
 # possible TODO: filter excessively long / short sentences
